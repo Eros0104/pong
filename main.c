@@ -1,8 +1,8 @@
+#define SDL_MAIN_HANDLED
 #include <stdbool.h> 
 #include <stdio.h>
 #include <stdlib.h>
-
-bool running = true;
+#include <SDL2/SDL.h>
 
 const int SCREEN_WIDTH = 48;
 const int SCREEN_HEIGHT = 16;
@@ -48,7 +48,7 @@ void clearScreen() {
 }
 
 void update() {
-
+  player1Position = player1Position + 1;;
 }
 
 void draw() {
@@ -75,11 +75,36 @@ void draw() {
   }
 }
 
+// void handleKeyPress(SDL_Event sdlEvent) {
+//   switch (sdlEvent.key.keysym.sym)
+//   {
+//   case SDLK_w:
+//     player1Position = player1Position - 1;
+//     break;
+
+//   case SDLK_s:
+//     player1Position = player1Position + 1;;
+//     break;
+
+//   default:
+//     break;
+//   }
+// }
+
 int main() {
-  while(running) {
+  while(true) {
+    SDL_Event event;
+    if (SDL_PollEvent(&event))
+    {
+      if (event.type == SDL_QUIT)
+      {
+        // Break out of the loop on quit
+        break;
+      }
+    }
+    SDL_Delay(1000);
     update();
     draw();
-    running = false;
   }
   return 0;
 }
