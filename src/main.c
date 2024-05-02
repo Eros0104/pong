@@ -12,7 +12,7 @@ const int SCREEN_HEIGHT = 480;
 const int PLAYERS_HEIGHT = 120;
 const int PLAYERS_WIDTH = 16;
 const int PLAYER_DISTANCE_FROM_WALL = 16;
-const float PLAYER_SPEED = 0.5;
+const float PLAYER_SPEED = 10;
 
 SDL_Renderer* renderer = NULL;
 
@@ -53,19 +53,21 @@ void drawPlayers() {
   SDL_RenderFillRect(renderer, &player2);
 }
 
-void updatePlayersPosition() {
-    if (p1.moveUp && p1.y > 0) {
-        p1.y -= PLAYER_SPEED;
-    }
-    if (p1.moveDown && p1.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
-        p1.y += PLAYER_SPEED;
-    }
-    if (p2.moveUp && p2.y > 0) {
-        p2.y -= PLAYER_SPEED;
-    }
-    if (p2.moveDown && p2.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
-        p2.y += PLAYER_SPEED;
-    }
+void updatePlayersPosition(float deltaTime) {
+  const float speed = PLAYER_SPEED * deltaTime * 60;
+
+  if (p1.moveUp && p1.y > 0) {
+      p1.y -= speed;
+  }
+  if (p1.moveDown && p1.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
+      p1.y += speed;
+  }
+  if (p2.moveUp && p2.y > 0) {
+      p2.y -= speed;
+  }
+  if (p2.moveDown && p2.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
+      p2.y += speed;
+  }
 }
 
 void handleKeyPress(SDL_Event sdlEvent) {
@@ -151,10 +153,16 @@ int main() {
   initializePlayers();
 
   bool quit = false;
+  Uint32 lastFrameTime = SDL_GetTicks(); // Get current time in milliseconds
 
   // Main loop
   while(!quit) {
     SDL_Event e;
+
+    // Calculate delta time
+    Uint32 currentFrameTime = SDL_GetTicks(); // Get current time in milliseconds
+    float deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f; // Convert milliseconds to seconds
+    lastFrameTime = currentFrameTime;
 
     // Handle events on queue
     while(SDL_PollEvent(&e) > 0) {
@@ -169,7 +177,7 @@ int main() {
     }
 
     // Update players position
-    updatePlayersPosition();
+    updatePlayersPosition(deltaTime);
 
     // Clear the renderer
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
