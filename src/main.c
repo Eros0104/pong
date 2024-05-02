@@ -12,7 +12,7 @@ const int SCREEN_HEIGHT = 480;
 const int PLAYERS_HEIGHT = 120;
 const int PLAYERS_WIDTH = 16;
 const int PLAYER_DISTANCE_FROM_WALL = 16;
-const int PLAYER_SPEED = 10;
+const float PLAYER_SPEED = 0.5;
 
 SDL_Renderer* renderer = NULL;
 
@@ -24,6 +24,8 @@ struct Ball {
 struct Player {
   float x;
   float y;
+  bool moveUp;
+  bool moveDown;
 } p1, p2;
 
 int calcPlayerVerticalPosition () {
@@ -51,27 +53,64 @@ void drawPlayers() {
   SDL_RenderFillRect(renderer, &player2);
 }
 
-// Improve this
+void updatePlayersPosition() {
+    if (p1.moveUp && p1.y > 0) {
+        p1.y -= PLAYER_SPEED;
+    }
+    if (p1.moveDown && p1.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
+        p1.y += PLAYER_SPEED;
+    }
+    if (p2.moveUp && p2.y > 0) {
+        p2.y -= PLAYER_SPEED;
+    }
+    if (p2.moveDown && p2.y < SCREEN_HEIGHT - PLAYERS_HEIGHT) {
+        p2.y += PLAYER_SPEED;
+    }
+}
+
 void handleKeyPress(SDL_Event sdlEvent) {
   switch (sdlEvent.key.keysym.sym) {
   case SDLK_w:
-    p1.y = p1.y - PLAYER_SPEED;
-    break;
+      p1.moveUp = true;
+      break;
 
   case SDLK_s:
-    p1.y = p1.y + PLAYER_SPEED;
-    break;
+      p1.moveDown = true;
+      break;
 
   case SDLK_UP:
-    p2.y = p2.y - PLAYER_SPEED;
-    break;
+      p2.moveUp = true;
+      break;
 
   case SDLK_DOWN:
-    p2.y = p2.y + PLAYER_SPEED;
-    break;
+      p2.moveDown = true;
+      break;
 
   default:
-    break;
+      break;
+  }
+}
+
+void handleKeyRelease(SDL_Event sdlEvent) {
+  switch (sdlEvent.key.keysym.sym) {
+  case SDLK_w:
+      p1.moveUp = false;
+      break;
+
+  case SDLK_s:
+      p1.moveDown = false;
+      break;
+
+  case SDLK_UP:
+      p2.moveUp = false;
+      break;
+
+  case SDLK_DOWN:
+      p2.moveDown = false;
+      break;
+
+  default:
+      break;
   }
 }
 
@@ -124,8 +163,13 @@ int main() {
         quit = true;
       } else if(e.type == SDL_KEYDOWN) {
         handleKeyPress(e);
+      } else if(e.type == SDL_KEYUP) {
+        handleKeyRelease(e);
       }
     }
+
+    // Update players position
+    updatePlayersPosition();
 
     // Clear the renderer
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
