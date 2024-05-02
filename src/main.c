@@ -4,16 +4,17 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
+// SCREEN
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+
+// PLAYERS
 const int PLAYERS_HEIGHT = 120;
 const int PLAYERS_WIDTH = 16;
 const int PLAYER_DISTANCE_FROM_WALL = 16;
+const int PLAYER_SPEED = 10;
 
 SDL_Renderer* renderer = NULL;
-
-int player1Position = 2;
-int player2Position = 2;
 
 struct Ball {
   float x;
@@ -50,21 +51,29 @@ void drawPlayers() {
   SDL_RenderFillRect(renderer, &player2);
 }
 
-// void handleKeyPress(SDL_Event sdlEvent) {
-//   switch (sdlEvent.key.keysym.sym)
-//   {
-//   case SDLK_w:
-//     player1Position = player1Position - 1;
-//     break;
+// Improve this
+void handleKeyPress(SDL_Event sdlEvent) {
+  switch (sdlEvent.key.keysym.sym) {
+  case SDLK_w:
+    p1.y = p1.y - PLAYER_SPEED;
+    break;
 
-//   case SDLK_s:
-//     player1Position = player1Position + 1;;
-//     break;
+  case SDLK_s:
+    p1.y = p1.y + PLAYER_SPEED;
+    break;
 
-//   default:
-//     break;
-//   }
-// }
+  case SDLK_UP:
+    p2.y = p2.y - PLAYER_SPEED;
+    break;
+
+  case SDLK_DOWN:
+    p2.y = p2.y + PLAYER_SPEED;
+    break;
+
+  default:
+    break;
+  }
+}
 
 void cleanup() {
     SDL_DestroyRenderer(renderer);
@@ -113,6 +122,8 @@ int main() {
       // User requests quit
       if(e.type == SDL_QUIT) {
         quit = true;
+      } else if(e.type == SDL_KEYDOWN) {
+        handleKeyPress(e);
       }
     }
 
