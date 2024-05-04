@@ -14,11 +14,16 @@ const int PLAYERS_WIDTH = 16;
 const int PLAYER_DISTANCE_FROM_WALL = 16;
 const float PLAYER_SPEED = 10;
 
+// BALL
+const int BALL_SIZE = 8;
+
 SDL_Renderer* renderer = NULL;
 
 struct Ball {
   float x;
   float y;
+  float speedX;
+  float speedY;
 } ball;
 
 struct Player {
@@ -34,12 +39,27 @@ int calcPlayerVerticalPosition () {
   return screenHalf - playerHeightHalf;
 }
 
+void initializeBall() {
+  ball.x = SCREEN_WIDTH / 2;
+  ball.y = SCREEN_HEIGHT / 2;
+
+  ball.speedX = 5;
+  ball.speedY = 5;
+}
+
 void initializePlayers() {
   p1.x = PLAYER_DISTANCE_FROM_WALL;
   p1.y = calcPlayerVerticalPosition();
 
   p2.x = SCREEN_WIDTH - (PLAYER_DISTANCE_FROM_WALL + PLAYERS_WIDTH);
   p2.y = calcPlayerVerticalPosition();
+}
+
+void drawBall() {
+  SDL_Rect ballRect = {ball.x, ball.y, BALL_SIZE, BALL_SIZE};
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Set color to white (R,G,B,A)
+  SDL_RenderFillRect(renderer, &ballRect);
 }
 
 void drawPlayers() {
@@ -51,6 +71,43 @@ void drawPlayers() {
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Set color to blue (R,G,B,A)
   SDL_RenderFillRect(renderer, &player2);
+}
+
+void updateBallPosition(float deltaTime) {
+  ball.x += ball.speedX * deltaTime * 60;
+  ball.y += ball.speedY * deltaTime * 60;
+
+  // Check if the ball hit the top or bottom of the screen
+  if (ball.y < 0 || ball.y > SCREEN_HEIGHT - BALL_SIZE) {
+      ball.speedY = -ball.speedY;
+  }
+
+  // Check if the ball hit the left or right wall
+  if (ball.x < 0 || ball.x > SCREEN_WIDTH - BALL_SIZE) {
+      initializeBall();
+  }
+
+  // Check if the ball hit player 1
+  if (ball.x < p1.x + PLAYERS_WIDTH && ball.x + BALL_SIZE > p1.x &&
+      ball.y < p1.y + PLAYERS_HEIGHT && ball.y + BALL_SIZE > p1.y) {
+      // Calculate the point of contact on player 1
+      float contactPoint = (ball.y + BALL_SIZE / 2) - (p1.y + PLAYERS_HEIGHT / 2);
+
+      // Adjust ball speed based on contact point
+      ball.speedX = -ball.speedX;
+      ball.speedY = contactPoint * 0.1; // bounce angle
+  }
+
+  // Check if the ball hit player 2
+  if (ball.x + BALL_SIZE > p2.x && ball.x < p2.x + PLAYERS_WIDTH &&
+      ball.y < p2.y + PLAYERS_HEIGHT && ball.y + BALL_SIZE > p2.y) {
+      // Calculate the point of contact on player 2
+      float contactPoint = (ball.y + BALL_SIZE / 2) - (p2.y + PLAYERS_HEIGHT / 2);
+
+      // Adjust ball speed based on contact point
+      ball.speedX = -ball.speedX;
+      ball.speedY = contactPoint * 0.1; // bounce angle
+  }
 }
 
 void updatePlayersPosition(float deltaTime) {
@@ -150,6 +207,8 @@ int main() {
       return -1;
   }
 
+  // Initialize players and ball
+  initializeBall();
   initializePlayers();
 
   bool quit = false;
@@ -179,12 +238,18 @@ int main() {
     // Update players position
     updatePlayersPosition(deltaTime);
 
+    // Update ball position
+    updateBallPosition(deltaTime);
+
     // Clear the renderer
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     // Draw the players
     drawPlayers();
+
+    // Draw the ball
+    drawBall();
 
     // Update the screen
     SDL_RenderPresent(renderer);
