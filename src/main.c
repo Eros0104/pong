@@ -74,17 +74,25 @@ void drawPlayers() {
   SDL_RenderFillRect(renderer, &player2);
 }
 
+float convertToPositive(float number) {
+  return number < 0 ? -number : number;
+}
+
+float convertToNegative(float number) {
+  return number > 0 ? -number : number;
+}
+
 void updateBallPosition(float deltaTime) {
   ball.x += ball.speedX * deltaTime * 60;
   ball.y += ball.speedY * deltaTime * 60;
 
   // Check if the ball hit the top or bottom of the screen
   if (ball.y < 0) {
-      ball.speedY = BALL_SPEED;
+      ball.speedY = convertToPositive(ball.speedY);
   }
 
   if (ball.y > SCREEN_HEIGHT - BALL_SIZE) {
-      ball.speedY = -BALL_SPEED;
+      ball.speedY = convertToNegative(ball.speedY);
   }
 
   // Check if the ball hit the left or right wall
@@ -99,7 +107,7 @@ void updateBallPosition(float deltaTime) {
       float contactPoint = (ball.y + BALL_SIZE / 2) - (p1.y + PLAYERS_HEIGHT / 2);
 
       // Adjust ball speed based on contact point
-      ball.speedX = BALL_SPEED;
+      ball.speedX = convertToPositive(ball.speedX);
       ball.speedY = contactPoint * 0.1; // bounce angle
   }
 
@@ -110,7 +118,7 @@ void updateBallPosition(float deltaTime) {
       float contactPoint = (ball.y + BALL_SIZE / 2) - (p2.y + PLAYERS_HEIGHT / 2);
 
       // Adjust ball speed based on contact point
-      ball.speedX = -BALL_SPEED;
+      ball.speedX = convertToNegative(ball.speedX);
       ball.speedY = contactPoint * 0.1; // bounce angle
   }
 }
