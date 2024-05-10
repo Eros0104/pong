@@ -1,8 +1,8 @@
 #ifndef BALL_H
 #define BALL_H
 
-const int BALL_SIZE = 12;
-const float BALL_SPEED = 5;
+#define BALL_SIZE 12
+#define BALL_SPEED 5
 
 struct Ball {
   float x;
