@@ -4,7 +4,9 @@ APP_NAME = pong
 BUILD_DIR = ./bin
 C_FILES = ./src/*.c
 
-APP_INCLUDES:= -I$(SDL_INCLUDE_PATH)
+INCLUDE_PATH := ./src/include
+
+APP_INCLUDES:= -I$(SDL_INCLUDE_PATH) -I$(INCLUDE_PATH)
 APP_LINKERS:= -L$(SDL_LIB_PATH) -lSDL2
 
 all: build run

@@ -1,7 +1,7 @@
-#include "ball.h"
-#include "player.h"
-#include "const.h"
-#include "utils.h"
+#include <ball.h>
+#include <player.h>
+#include <const.h>
+#include <utils.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
