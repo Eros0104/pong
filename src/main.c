@@ -3,36 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include "player.h"
+#include "ball.h"
 
 // SCREEN
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-// PLAYERS
-const int PLAYERS_HEIGHT = 120;
-const int PLAYERS_WIDTH = 16;
-const int PLAYER_DISTANCE_FROM_WALL = 16;
-const float PLAYER_SPEED = 10;
-
-// BALL
-const int BALL_SIZE = 12;
-const float BALL_SPEED = 5;
-
 SDL_Renderer* renderer = NULL;
 
-struct Ball {
-  float x;
-  float y;
-  float speedX;
-  float speedY;
-} ball;
+struct Ball ball;
 
-struct Player {
-  float x;
-  float y;
-  bool moveUp;
-  bool moveDown;
-} p1, p2;
+struct Player p1, p2;
 
 int calcPlayerVerticalPosition () {
   int screenHalf = SCREEN_HEIGHT / 2;
